@@ -2,13 +2,13 @@ R=Math.random
 // mini jquery ;) (equivalent to dev console's native $/$$ functions)
 $ =function(x,c){return(c||document).querySelector(x)}
 $$=function(x,c){return[].slice.call((c||document).querySelectorAll(x))}
-$T=function $T(x,y){return $('.tile.x'+x+'.y'+y)} // get tile
+$T=function $T(x,y){return $('.tile.x'+x+'.y'+(y<0?'h':y))} // get tile
 lock=function(l){game.classList[l?'add':'remove']('lock')}
 
 // create tile
 function tile(x,y,v,t){
 	t=document.createElement('div')
-	t.setPos=function(x,y){t.pos={x:x,y:y};t.setAttribute('class','tile x'+x+' y'+y)}
+	t.setPos=function(x,y){t.pos={x:x,y:y};t.setAttribute('class','tile x'+x+' y'+(y<0?'h':y))}
 	t.setVal=function(v){t.textContent=v;t.style.backgroundColor='hsl('+((v*50)%360)+',100%,50%)'}
 	t.setVal(v);t.setPos(x,y)
 	return t
@@ -40,13 +40,13 @@ function interAction(t,a){
 	if(a.length>0)lock(true),~function removeTiles(){
 		if (a.length>0)return removeTile(a.pop(),removeTiles)
 		t.setVal(t.textContent-1)
-		~function fall(f,x,y,t){
-			f=0
-			for(y=9;y--;)for(x=10;x--;)
+		~function fall(r,f,x,y,t){
+			for(f=0,y=8;y>=-1;y--)for(x=10;x--;)
 				if((t=$T(x,y))&&!$T(x,y+1))t.setPos(x,y+1),f++	
-			if(f>0)fall()
+			if(f>0)return setTimeout(function(){fall(r)},200)
+			if(r>0){for(x=10;x--;)if(!$T(x,0)&&R()<.5)game.appendChild(tile(x,-1,7+(R()*3)|0));setTimeout(function(){fall(r-1)},200)}
 			lock(false)
-		}()
+		}(1)
 	}()
 }
 
