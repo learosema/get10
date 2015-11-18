@@ -21,7 +21,7 @@ body {
 .tile {
 	position: absolute;
 	border-radius: 12.5%;
-	transition: top 1s linear, left 1s linear, opacity 0.5s ease; 
+	transition: top 0.1s linear, left 0.1s linear, opacity 0.1s linear, background-color 0.5s linear; 
 	font-family: 'Julius Sans One', sans-serif;
 	font-size: 8vh;
 	line-height: 100%;
@@ -37,6 +37,11 @@ body {
 	cursor: pointer;
 }
 
+.sel {
+	background: #fff!important;
+}
+
+.yh { top:-10%; }
 .y0 { top:  0 ; } .x0 { left:  0 ; }
 .y1 { top: 10%; } .x1 { left: 10%; }
 .y2 { top: 20%; } .x2 { left: 20%; }

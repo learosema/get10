@@ -1,23 +1,20 @@
 R=Math.random
-// mini jquery ;) (available in the dev console, anyway)
-$ =function(x,c){return[].slice.call((c||document).querySelector(x))}
+// mini jquery ;) (equivalent to dev console's native $/$$ functions)
+$ =function(x,c){return(c||document).querySelector(x)}
 $$=function(x,c){return[].slice.call((c||document).querySelectorAll(x))}
-D=window.setTimeOut // delay
+$T=function $T(x,y){return $('.tile.x'+x+'.y'+y)} // get tile
+lock=function(l){game.classList[l?'add':'remove']('lock')}
 
 // create tile
-function tile(x,y,i,t){
+function tile(x,y,v,t){
 	t=document.createElement('div')
-	t.setAttribute('class','tile x'+x+' y'+y+'')
-	t.style.backgroundColor='hsl('+((i*127)%360)+',100%,70%)'
-	t.textContent=i
-	t.pos={x:x,y:y}
+	t.setPos=function(x,y){t.pos={x:x,y:y};t.setAttribute('class','tile x'+x+' y'+y)}
+	t.setVal=function(v){t.textContent=v;t.style.backgroundColor='hsl('+((v*50)%360)+',100%,50%)'}
+	t.setVal(v);t.setPos(x,y)
 	return t
 }
 
-// get tile
-function getTile(x,y){return $('.tile .x'+x+' .y'+y)}
-
-// remove tile
+// remove tile and execute callback on transition end
 function removeTile(t,cb){
 	t.classList.add('fade-out')
 	t.addEventListener('transitionend', function(){
@@ -26,15 +23,31 @@ function removeTile(t,cb){
 	})
 }
 
-// recursively remove tiles with same numbers
-function recursiveRemoveTile(t,cb,x,y,v){
-	v=t.textContent
-	// WIP
+// get adjacent tiles with same numbers
+function getAdjacentTiles(t,t0,t1,d,D,v,r,i){
+	for(r=[],v=t.textContent,i=4,D="01211012";i--;){
+		d=[D[i*2]-1,D[i*2+1]-1]
+		t1=$T(t.pos.x+d[0],t.pos.y+d[1])
+		if(t1&&t1!=t0&&t1.textContent==v&&!t1.classList.contains('sel'))
+			t1.classList.add('sel'),r.push(t1),[].push.apply(r,getAdjacentTiles(t1,t0?t0:t))
+	}
+	return r
 }
 
-function interAction(t){
-	if (game.classList.contains('interaction'))return
-	removeTile(t, function(){game.classList.remove('interaction')})
+function interAction(t,a){
+	if (game.classList.contains('lock'))return
+	a=getAdjacentTiles(t)
+	if(a.length>0)lock(true),~function removeTiles(){
+		if (a.length>0)return removeTile(a.pop(),removeTiles)
+		t.setVal(t.textContent-1)
+		~function fall(f,x,y,t){
+			f=0
+			for(y=9;y--;)for(x=10;x--;)
+				if((t=$T(x,y))&&!$T(x,y+1))t.setPos(x,y+1),f++	
+			if(f>0)fall()
+			lock(false)
+		}()
+	}()
 }
 
 // init game
