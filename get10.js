@@ -15,10 +15,10 @@ function tile(x,y,v,t){
 }
 
 // remove tile and execute callback on transition end
-function removeTile(t,cb,e,h){
+function removeTile(t,cb,ex,h){
 	t.classList.add('fade-out')
 	setTimeout(function(){
-		try{game.removeChild(t)}catch(e){}
+		try{game.removeChild(t)}catch(ex){console.log(ex.message)}
 		if(cb)cb()
 	},100)
 }
@@ -34,12 +34,11 @@ function getAdjacentTiles(t,t0,t1,l,D,v,r,i){
 	return r
 }
 
-function interAction(t,a,m){
-	if (game.classList.contains('lock')||
-		t.classList.contains('sel'))return
+function interAction(t,a,b,m){
+	if (game.classList.contains('lock')||$$('.sel').length>0)return
 	m=t.textContent|0
 	if(m>0&&(a=getAdjacentTiles(t)).length>0)moves++,lock(true),~function removeTiles(){
-		if (a.length>0)return removeTile(a.pop(),removeTiles)
+		if (a.length>0)return b=a.pop(),removeTile(b,removeTiles)
 		t.setVal(m-1)
 		~function fall(r,f,x,y,t){
 			for(f=0,y=8;y>=-1;y--)for(x=10;x--;)
