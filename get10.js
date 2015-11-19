@@ -37,10 +37,10 @@ function getAdjacentTiles(t,t0,t1,l,D,v,r,i){
 function interAction(t,a,m){
 	if (game.classList.contains('lock')||
 		t.classList.contains('sel'))return
-	a=getAdjacentTiles(t),m=0
-	if(a.length>0)moves++,lock(true),~function removeTiles(){
+	m=t.textContent|0
+	if(m>0&&(a=getAdjacentTiles(t)).length>0)moves++,lock(true),~function removeTiles(){
 		if (a.length>0)return removeTile(a.pop(),removeTiles)
-		if(!m)t.setVal(t.textContent-1);m++
+		t.setVal(m-1)
 		~function fall(r,f,x,y,t){
 			for(f=0,y=8;y>=-1;y--)for(x=10;x--;)
 				if((t=$T(x,y))&&!$T(x,y+1))t.setPos(x,y+1),f++	
