@@ -34,10 +34,14 @@ function getAdjacentTiles(t,t0,t1,l,D,v,r,i){
 	return r
 }
 
-function interAction(t,a,b,m){
-	if (game.classList.contains('lock')||$$('.sel').length>0)return
-	m=t.textContent|0
-	if(m>0&&(a=getAdjacentTiles(t)).length>0)moves++,lock(true),~function removeTiles(){
+function interAction(e,t,a,b,m){
+	if ($('.lock')||$$('.sel').length>0)return
+	lock(true),t=e.target,m=t.textContent|0
+	if(m==0||(a=getAdjacentTiles(t)).length==0)return lock(false)
+	moves++
+	console.log(Date.now()+" --- Number: " + m + " => " + (m-1) + " --- Move: " + moves,e)
+	if (moves%10==0)console.log("-----------------------------------")
+	~function removeTiles(){
 		if (a.length>0)return b=a.pop(),removeTile(b,removeTiles)
 		t.setVal(m-1)
 		~function fall(r,f,x,y,t){
@@ -50,13 +54,17 @@ function interAction(t,a,b,m){
 					setTimeout(function(){fall(r-1)},200)}
 			lock(false)
 		}(1)
-	}()
+	}()	
 }
 
 // init game
-for(i=10;i--;)
+for(lastClick=0,i=10;i--;)
 	for(j=10;j--;)
 		game.appendChild(tile(i,j,7+(R()*3)|0))
 
-window.onclick=function(e){if(e.target.classList.contains('tile'))interAction(e.target)}
+addEventListener('click', function(e){ console.log("click!")
+	if(Date.now()-lastClick<50)return
+	lastClick=Date.now()
+	if(e.target.classList.contains('tile'))interAction(e)
+})
 
